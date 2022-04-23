@@ -9,6 +9,7 @@ import Logger
 
 from notes.Note import Note
 from notes.StorageAsync import AbstractStorage, MemoryStorage
+from NotesRA.NoteRA import File
 
 
 class AbstractCommand(object):
@@ -16,6 +17,7 @@ class AbstractCommand(object):
     Базовый класс команды.
     В рамках одной команды читаем данные, ведём обработку и пишем результат в ответ.
     """
+
     def __init__(self, storage: AbstractStorage, reader: StreamReader, writer: StreamWriter):
         self._storage = storage
         self._reader = reader
@@ -32,22 +34,28 @@ class AbstractCommand(object):
         self._writer.write((line + '\n').encode())
 
 
-class GetNotesCommand(AbstractCommand):
+class InfoFolderCommand(AbstractCommand):
     async def execute(self):
         self._writeline('OK')
-        self._writeline(';;'.join([str(note) async for note in self._storage.get_all()]))
+        self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
 
 
-class GetNoteCommand(AbstractCommand):
+class InfoFileCommand(AbstractCommand):
+    async def execute(self):
+        self._writeline('OK')
+        self._writeline(';;'.join([str(file) async for file in self._storage.get_all()]))
+
+
+class GetFolderCommand(AbstractCommand):
     async def execute(self):
         try:
-            note_id = int(await self._readline())
+            folder_id = int(await self._readline())
 
-            if note := await self._storage.get_one(note_id):
+            if folder := await self._storage.get_one(folder_id):
                 self._writeline('OK')
-                self._writeline(str(note))
+                self._writeline(str(folder))
             else:
-                self._writeline(f'ERROR: note "{note_id}" not found')
+                self._writeline(f'ERROR: note "{folder_id}" not found')
         except ValueError as error:
             self._writeline(f'ERROR: {error}')
 
@@ -62,10 +70,37 @@ class PutNoteCommand(AbstractCommand):
             self._writeline(f'ERROR: {error}')
 
 
-class DeleteNoteCommand(AbstractCommand):
+class CreateFileCommand(AbstractCommand):
     async def execute(self):
-        note_id = int(await self._readline())
-        await self._storage.delete_one(note_id)
+        try:
+            note = Note(**json.loads(await self._readline()))
+            await self._storage.put_one(note)
+            self._writeline('OK')
+        except (TypeError, ValueError) as error:
+            self._writeline(f'ERROR: {error}')
+
+
+class CreateFolderCommand(AbstractCommand):
+    async def execute(self):
+        try:
+            note = Note(**json.loads(await self._readline()))
+            await self._storage.put_one(note)
+            self._writeline('OK')
+        except (TypeError, ValueError) as error:
+            self._writeline(f'ERROR: {error}')
+
+
+class DeleteFileCommand(AbstractCommand):
+    async def execute(self):
+        file_id = int(await self._readline())
+        await self._storage.delete_one(file_id)
+        self._writeline('OK')
+
+
+class DeleteFolderCommand(AbstractCommand):
+    async def execute(self):
+        folder_id = int(await self._readline())
+        await self._storage.delete_one(folder_id)
         self._writeline('OK')
 
 
@@ -73,6 +108,7 @@ class CommandFactory(object):
     """
     Фабрика команд. Позволяет получать нужный класс команды по имени.
     """
+
     class __UnknownCommand(AbstractCommand):
         async def execute(self):
             self._writeline('Error: "Unknown command"')
@@ -80,10 +116,16 @@ class CommandFactory(object):
 
     # регистрируем команды, которые будет поддерживать сервер
     _commands = {
-        'GET_NOTES': GetNotesCommand,
-        'GET_NOTE': GetNoteCommand,
+
+
         'PUT_NOTE': PutNoteCommand,
-        'DELETE_NOTE': DeleteNoteCommand,
+        'CREATE_FOLDER': CreateFolderCommand,
+        'CREATE_FILE': CreateFileCommand,
+        'DELETE_FOLDER': DeleteFolderCommand,
+        'DELETE_FILE': DeleteFileCommand,
+        'SAVE_FILE': SaveFileCommand,
+        'INFO_FOLDER': InfoFolderCommand,
+        'INFO_FILE': InfoFileCommand
     }
 
     def __init__(self, storage: AbstractStorage, reader: StreamReader, writer: StreamWriter):
@@ -101,6 +143,7 @@ class CommandProcessor(object):
     """
     Класс логики сервера (обработчик команд).
     """
+
     def __init__(self, storage: AbstractStorage):
         # внедряем зависимости (нам нужен только storage)
         self.__storage = storage
@@ -131,6 +174,7 @@ async def main():
 
     async with server:
         await server.serve_forever()
+
 
 if __name__ == '__main__':
     Logger.configure_logger('tcp_server_example')

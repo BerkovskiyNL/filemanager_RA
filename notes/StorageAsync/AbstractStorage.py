@@ -23,3 +23,6 @@ class AbstractStorage(object):
     @abstractmethod
     async def delete_one(self, key: int):
         raise NotImplementedError
+
+    def get_file(self, file_id):
+        pass

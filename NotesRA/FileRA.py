@@ -1,10 +1,11 @@
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
-from notes.Note import Note
-from notes.Storage import AbstractStorage
+from NotesRA.NoteRA import File
+from NotesRA.Storage import AbstractStorage
 
-
-class NoteManager:
+class FileManager:
     """
     Менеджер заметок. Управляет заметками определённой группы.
     """
