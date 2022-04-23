@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Iterable
 
 from FileRA.File import File
-from FileRA.Storage import AbstractStorage
+from FileRA.StorageAsync import AbstractStorage
 
 class FileManager:
     """

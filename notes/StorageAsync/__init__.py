@@ -1,2 +1,0 @@
-from notes.StorageAsync.AbstractStorage import AbstractStorage
-from notes.StorageAsync.MemoryStorage import MemoryStorage
