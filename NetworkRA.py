@@ -9,8 +9,8 @@ import Logger
 
 from notes.Note import Note
 from notes.StorageAsync import AbstractStorage, MemoryStorage
-from NotesRA.NoteRA import File
-
+from FileRA.File import File
+from FileRA.File import Folder
 
 class AbstractCommand(object):
     """
@@ -37,13 +37,13 @@ class AbstractCommand(object):
 class InfoFolderCommand(AbstractCommand):
     async def execute(self):
         self._writeline('OK')
-        self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
+        self._writeline(';;'.join([str(folder) async for folder in self._storage.get_folder()]))
 
 
 class InfoFileCommand(AbstractCommand):
     async def execute(self):
         self._writeline('OK')
-        self._writeline(';;'.join([str(file) async for file in self._storage.get_all()]))
+        self._writeline(';;'.join([str(file) async for file in self._storage.get_file()]))
 
 
 class GetFolderCommand(AbstractCommand):

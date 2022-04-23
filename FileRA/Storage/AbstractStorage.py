@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import AsyncIterable
 
-from notes.Note import Note
+from FileRA.File import Folder, File
+#from notes.Note import Note
 
 
 class AbstractStorage(object):
@@ -9,11 +10,11 @@ class AbstractStorage(object):
         pass
 
     @abstractmethod
-    def get_all(self) -> AsyncIterable[Note]:
+    def get_folder(self) -> AsyncIterable[Folder]:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_one(self, key: int) -> Note:
+    def get_file(self) -> AsyncIterable[File]:
         raise NotImplementedError
 
     @abstractmethod
@@ -21,5 +22,13 @@ class AbstractStorage(object):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_one(self, key: int):
+    async def delete_file(self, key: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_folder(self, key: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_folder(self, key: int) -> Folder:
         raise NotImplementedError
