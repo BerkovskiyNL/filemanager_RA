@@ -2,7 +2,6 @@ from abc import abstractmethod
 from typing import AsyncIterable
 
 from FileRA.File import Folder, File
-#from notes.Note import Note
 
 
 class AbstractStorage(object):
@@ -18,17 +17,13 @@ class AbstractStorage(object):
         raise NotImplementedError
 
     @abstractmethod
-    async def put_one(self, note: Note):
+    def create_folder(self) -> AsyncIterable[Folder]:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_file(self, key: int):
+    def create_file(self) -> AsyncIterable[File]:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_folder(self, key: int):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_folder(self, key: int) -> Folder:
+    async def delete_one(self, key: int):
         raise NotImplementedError

@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-from FileRA.File import File
+from FileRA.File import File, Folder
 from FileRA.StorageAsync import AbstractStorage
+
 
 class FileManager:
     """
@@ -14,14 +15,20 @@ class FileManager:
         self.__name = name
         self.__storage = storage
 
-    def get_notes(self) -> Iterable[Note]:
+    def get_all(self) -> Iterable[Folder, File]:
         return self.__storage.get_all()
 
-    def get_note(self, note_id) -> Note | None:
-        return self.__storage.get_one(note_id)
+    def get_file(self, file_id) -> File | None:
+        return self.__storage.get_file(file_id)
 
-    def save_note(self, note: Note):
-        self.__storage.put_one(note)
+    def create_folder(self) -> Folder:
+        return self.__storage.create_folder()
 
-    def delete_note(self, note_id: int):
-        self.__storage.delete_one(note_id)
+    def put_one(self, file: File):
+        self.__storage.put_one(file)
+
+    def delete_one(self, file_id: int):
+        self.__storage.delete_one(file_id)
+
+    def put_folder(self, folder: Folder):
+        self.__storage.put_one(folder)

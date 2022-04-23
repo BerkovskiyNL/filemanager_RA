@@ -1,16 +1,17 @@
 import asyncio
 import json
 import logging
-
+import os
+import pathlib
 from abc import abstractmethod
 from asyncio.streams import StreamReader, StreamWriter
+from typing import Any
 
 import Logger
 
-from notes.Note import Note
-from notes.StorageAsync import AbstractStorage, MemoryStorage
-from FileRA.File import File
-from FileRA.File import Folder
+from FileRA.StorageAsync import AbstractStorage, MemoryStorage
+from FileRA.File import File, Folder
+
 
 class AbstractCommand(object):
     """
@@ -51,7 +52,7 @@ class GetFolderCommand(AbstractCommand):
         try:
             folder_id = int(await self._readline())
 
-            if folder := await self._storage.get_one(folder_id):
+            if folder := await self._storage.get_folder(folder_id):
                 self._writeline('OK')
                 self._writeline(str(folder))
             else:
@@ -60,22 +61,15 @@ class GetFolderCommand(AbstractCommand):
             self._writeline(f'ERROR: {error}')
 
 
-class PutNoteCommand(AbstractCommand):
-    async def execute(self):
-        try:
-            note = Note(**json.loads(await self._readline()))
-            await self._storage.put_one(note)
-            self._writeline('OK')
-        except (TypeError, ValueError) as error:
-            self._writeline(f'ERROR: {error}')
-
-
 class CreateFileCommand(AbstractCommand):
     async def execute(self):
         try:
-            note = Note(**json.loads(await self._readline()))
-            await self._storage.put_one(note)
-            self._writeline('OK')
+            File: str = input('Имя файла: ')
+            with open(File, 'w') as file:
+
+                await self._storage.put_one(file)
+            self._writeline('Cоздан')
+            file.close()
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
 
@@ -83,8 +77,10 @@ class CreateFileCommand(AbstractCommand):
 class CreateFolderCommand(AbstractCommand):
     async def execute(self):
         try:
-            note = Note(**json.loads(await self._readline()))
-            await self._storage.put_one(note)
+            Folder: str = input('Имя папки: ')
+            if Folder:
+                "mkdir {0}".format(Folder).split(' ')
+                await self._storage.put_one()
             self._writeline('OK')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
@@ -117,13 +113,10 @@ class CommandFactory(object):
     # регистрируем команды, которые будет поддерживать сервер
     _commands = {
 
-
-        'PUT_NOTE': PutNoteCommand,
         'CREATE_FOLDER': CreateFolderCommand,
         'CREATE_FILE': CreateFileCommand,
         'DELETE_FOLDER': DeleteFolderCommand,
         'DELETE_FILE': DeleteFileCommand,
-        'SAVE_FILE': SaveFileCommand,
         'INFO_FOLDER': InfoFolderCommand,
         'INFO_FILE': InfoFileCommand
     }

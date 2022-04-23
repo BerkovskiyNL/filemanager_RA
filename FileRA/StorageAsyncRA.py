@@ -5,58 +5,67 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable, Tuple
 
-from notes.Note import Note
-
+from FileRA.File import File
+from FileRA.File import Folder
 
 class AbstractStorage(object):
     """
     Определяет интерфейс хранилища заметок.
     """
     @abstractmethod
-    def get_all(self) -> Iterable[Note]:
+    def get_all(self) -> Iterable[Folder, File]:
         raise NotImplemented
 
     @abstractmethod
-    def get_one(self, note_id) -> Note | None:
+    def get_file(self, file_id) -> File | None:
         raise NotImplemented
 
     @abstractmethod
-    def put_one(self, note: Note):
+    def get_folder(self, folder_id) -> Folder | None:
         raise NotImplemented
 
     @abstractmethod
-    def delete_one(self, note_id: int):
+    def put_one(self, file: File):
         raise NotImplemented
 
+    @abstractmethod
+    def delete_file(self, file_id: int):
+        raise NotImplemented
+
+    @abstractmethod
+    def delete_folder(self, folder_id: int):
+        raise NotImplemented
 
 class BaseStorage(object):
     """
     Базовый класс хранилища заметок (содержит только данные).
     """
     def __init__(self):
-        self._notes = {}
-
+        self._files = {}
+        self._folders = {}
 
 class ReadOnlyStorage(BaseStorage):
     """
     Хранилище заметок с возможностью только читать (добавляет методы выгрузки данных).
     """
-    def get_all(self) -> Iterable[Note]:
-        return self._notes.values()
+    def get_all(self) -> Iterable[Folder]:
+        return self._folders.values()
 
-    def get_one(self, note_id) -> Note | None:
-        return self._notes.get(note_id)
+    def get_folder(self, folder_id) -> Folder | None:
+        return self._folders.get(folder_id)
 
+    def get_file(self, file_id) -> File | None:
+        return self._files.get(file_id)
 
 class WriteOnlyStorage(BaseStorage):
     """
     Хранилище заметок с возможностью только (добавляет методы редактирования данных).
     """
-    def put_one(self, note: Note):
-        self._notes[note.note_id] = note
+    def put_one(self, file: File):
+        self._files[file.file_id] = file
 
-    def delete_one(self, note_id: int):
-        del self._notes[note_id]
+    def delete_one(self, file_id: int):
+        del self._files[file_id]
 
 
 class ReadWriteStorage(ReadOnlyStorage, WriteOnlyStorage, AbstractStorage):
@@ -78,7 +87,7 @@ class FileStorage(AbstractStorage):
         if not self.__path.exists():
             self.__path.touch()
 
-    def get_all(self) -> Iterable[Note]:
+    def get_all(self) -> Iterable[Folder]:
         # открываем файл хранилища на чтение
         with self.__path.open('r') as f:
             # читаем файл построчно и для каждой строки формируем заметку
