@@ -1,2 +1,2 @@
-from notes.StorageAsync.AbstractStorage import AbstractStorage
-from notes.StorageAsync.MemoryStorage import MemoryStorage
+from FileRA.StorageAsync.AbstractStorage import AbstractStorage
+from FileRA.StorageAsync.MemoryStorage import MemoryStorage

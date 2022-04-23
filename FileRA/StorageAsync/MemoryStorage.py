@@ -1,23 +1,24 @@
 from typing import AsyncIterable, Dict
 
-from notes.Note import Note
+from FileRA.File import File, Folder
 
-from notes.StorageAsync import AbstractStorage
+from FileRA.StorageAsync import AbstractStorage
 
 
 class MemoryStorage(AbstractStorage):
     def __init__(self):
-        self.__storage: Dict[int, Note] = {}
+        self.__storage: Dict[int, File] = {}
+        self.__storage: Dict[int, Folder] = {}
 
-    async def get_all(self) -> AsyncIterable[Note]:
+    async def get_all(self) -> AsyncIterable[Folder]:
         for value in self.__storage.values():
             yield value
 
-    async def get_one(self, key: int) -> Note | None:
+    async def get_one(self, key: int) -> File | None:
         return self.__storage.get(key)
 
-    async def put_one(self, note: Note):
-        self.__storage[note.note_id] = note
+    async def put_one(self, file: File):
+        self.__storage[file.file_id] = File
 
     async def delete_one(self, key: int):
         if key in self.__storage:

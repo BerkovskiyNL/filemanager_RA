@@ -13,15 +13,11 @@ class AbstractStorage(object):
     Определяет интерфейс хранилища заметок.
     """
     @abstractmethod
-    def get_all(self) -> Iterable[Folder, File]:
+    def get_all(self) -> Iterable[Folder]:
         raise NotImplemented
 
     @abstractmethod
     def get_file(self, file_id) -> File | None:
-        raise NotImplemented
-
-    @abstractmethod
-    def get_folder(self, folder_id) -> Folder | None:
         raise NotImplemented
 
     @abstractmethod
@@ -79,9 +75,10 @@ class FileStorage(AbstractStorage):
     """
     Реализация хранилища в файле.
     """
-    def __init__(self, path: Path, delimiter=';;'):
-        self.__path = path
-        self.__delimiter = delimiter
+
+    def __init__(self, name: str, content: str):
+        self.__name = name
+        self.__content = content
 
         # если файла хранилища нет по указанному пути, создадим его
         if not self.__path.exists():
@@ -132,7 +129,7 @@ class DatabaseStorage(AbstractStorage):
             'CREATE TABLE IF NOT EXISTS notes (id int PRIMARY KEY, author text, message text)'
         )
 
-    def get_all(self) -> Iterable[Note]:
+    def get_all(self) -> Iterable[Folder]:
         # формируем заметки из всех записей таблицы
         yield from (self.__make_note(row) for row in self.__cursor.execute('SELECT * FROM notes'))
 

@@ -9,19 +9,23 @@ class AbstractStorage(object):
         pass
 
     @abstractmethod
-    def get_folder(self) -> AsyncIterable[Folder]:
+    def get_all(self) -> AsyncIterable[Folder]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_file(self) -> AsyncIterable[File]:
+    async def get_file(self, key: int) -> File:
         raise NotImplementedError
 
     @abstractmethod
-    def create_folder(self) -> AsyncIterable[Folder]:
+    async def get_folder(self, key: int) -> Folder:
         raise NotImplementedError
 
     @abstractmethod
-    def create_file(self) -> AsyncIterable[File]:
+    async def create_folder(self, folder: Folder):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def put_one(self, file: File):
         raise NotImplementedError
 
     @abstractmethod

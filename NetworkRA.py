@@ -38,13 +38,21 @@ class AbstractCommand(object):
 class InfoFolderCommand(AbstractCommand):
     async def execute(self):
         self._writeline('OK')
-        self._writeline(';;'.join([str(folder) async for folder in self._storage.get_folder()]))
+        self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
 
 
 class InfoFileCommand(AbstractCommand):
     async def execute(self):
-        self._writeline('OK')
-        self._writeline(';;'.join([str(file) async for file in self._storage.get_file()]))
+        try:
+            file_id = int(await self._readline())
+
+            if note := await self._storage.get_file(file_id):
+                self._writeline('OK')
+                self._writeline(str(note))
+            else:
+                self._writeline(f'ERROR: note "{file_id}" not found')
+        except ValueError as error:
+            self._writeline(f'ERROR: {error}')
 
 
 class GetFolderCommand(AbstractCommand):
@@ -64,10 +72,11 @@ class GetFolderCommand(AbstractCommand):
 class CreateFileCommand(AbstractCommand):
     async def execute(self):
         try:
+
             File: str = input('Имя файла: ')
             with open(File, 'w') as file:
 
-                await self._storage.put_one(file)
+                await self._storage.put_one(File)
             self._writeline('Cоздан')
             file.close()
         except (TypeError, ValueError) as error:
