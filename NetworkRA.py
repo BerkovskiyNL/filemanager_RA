@@ -73,12 +73,12 @@ class CreateFileCommand(AbstractCommand):
     async def execute(self):
         try:
 
-            File: str = input('Имя файла: ')
-            with open(File, 'w') as file:
+            File = input('Имя файла: ')
+            open(File, 'w')
 
-                await self._storage.put_one(File)
+            await self._storage.put_one(File)
             self._writeline('Cоздан')
-            file.close()
+
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
 

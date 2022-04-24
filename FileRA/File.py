@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class File:
+    file_id: int
     name: str
     size: int
     content: str
@@ -10,6 +11,8 @@ class File:
 
 @dataclass
 class Folder:
+    folder_id: int
+    file_id: int
     name: str
     size: int
     content: str

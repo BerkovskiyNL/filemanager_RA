@@ -7,18 +7,19 @@ from FileRA.StorageAsync import AbstractStorage
 
 class MemoryStorage(AbstractStorage):
     def __init__(self):
-        self.__storage: Dict[int, File] = {}
-        self.__storage: Dict[int, Folder] = {}
+        self.__storageFile: Dict[int, File] = {}
+        self.__storageFolder: Dict[int, Folder] = {}
+        self.__storage: Dict[int] = {}
 
     async def get_all(self) -> AsyncIterable[Folder]:
-        for value in self.__storage.values():
+        for value in self.__storageFolder.values():
             yield value
 
     async def get_one(self, key: int) -> File | None:
-        return self.__storage.get(key)
+        return self.__storageFile.get(key)
 
     async def put_one(self, file: File):
-        self.__storage[file.file_id] = File
+        self.__storageFile[file.file_id] = file
 
     async def delete_one(self, key: int):
         if key in self.__storage:
