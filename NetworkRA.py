@@ -46,11 +46,11 @@ class InfoFileCommand(AbstractCommand):
         try:
             file_id = int(await self._readline())
 
-            if note := await self._storage.get_file(file_id):
+            if file := await self._storage.get_file(file_id):
                 self._writeline('OK')
-                self._writeline(str(note))
+                self._writeline(str(file))
             else:
-                self._writeline(f'ERROR: note "{file_id}" not found')
+                self._writeline(f'ERROR: file "{file_id}" not found')
         except ValueError as error:
             self._writeline(f'ERROR: {error}')
 
