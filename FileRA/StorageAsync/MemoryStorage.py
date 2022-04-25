@@ -6,6 +6,7 @@ from FileRA.StorageAsync import AbstractStorage
 
 
 class MemoryStorage(AbstractStorage):
+
     def __init__(self):
         self.__storageFile: Dict[int, File] = {}
         self.__storageFolder: Dict[int, Folder] = {}

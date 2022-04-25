@@ -11,7 +11,7 @@ from FileRA.File import Folder
 
 class AbstractStorage(object):
     """
-    Определяет интерфейс хранилища заметок.
+    Определяется интерфейс папки.
     """
 
     @abstractmethod
@@ -19,7 +19,7 @@ class AbstractStorage(object):
         raise NotImplemented
 
     @abstractmethod
-    def get_file(self, file_id) -> File | None:
+    def get_one(self, file_id) -> File | None:
         raise NotImplemented
 
     @abstractmethod
@@ -53,10 +53,7 @@ class ReadOnlyStorage(BaseStorage):
     def get_all(self) -> Iterable[Folder]:
         return self._folders.values()
 
-    def get_folder(self, folder_id) -> Folder | None:
-        return self._folders.get(folder_id)
-
-    def get_file(self, file_id) -> File | None:
+    def get_one(self, file_id) -> File | None:
         return self._files.get(file_id)
 
 
@@ -81,7 +78,7 @@ class ReadWriteStorage(ReadOnlyStorage, WriteOnlyStorage, AbstractStorage):
 
 class FileStorage(AbstractStorage):
     """
-    Реализация хранилища в файле.
+    Реализация хранилища в папке.
     """
 
     def __init__(self, path: Path, delimiter=';;'):
@@ -92,11 +89,11 @@ class FileStorage(AbstractStorage):
         if not self.__path.exists():
             self.__path.touch()
 
-    def get_all(self) -> Iterable[Folder]:
-        # открываем файл хранилища на чтение
-        with self.__path.open('r') as f:
-            # читаем файл построчно и для каждой строки формируем заметку
-            yield from (self.__make_file(line.removesuffix('\n')) for line in f)
+    # def get_all(self, file=File) -> Iterable[Folder]:
+    #     # открываем папку на чтение
+    #     with self.__path.open('r') as f:
+    #         # читаем все файлы и формируем список
+    #         yield from (self.__make_folder(file.removesuffix('\n')) for list in f)
 
     def get_one(self, file_id) -> Folder | None:
         # перебираем все заметки в поисках нужной, если находим - возвращаем
@@ -107,21 +104,23 @@ class FileStorage(AbstractStorage):
         return None
 
     def put_one(self, file: File):
-        # читаем заметки, фильтруем, перезаписываем с новыми данными
-        lines = [self.__make_line(x) for x in self.get_all() if x.file_id != file.file_id] + [self.__make_line(file)]
-        self.__path.write_text('\n'.join(lines))
+        # открываем файл на запись
+        open(f'files', 'w')
+        self.__path.open('w')
 
     def delete_one(self, file_id: int):
         # читаем заметки, фильтруем, перезаписываем без удалённой
         lines = [self.__make_line(file) for file in self.get_all() if file.file_id != file_id]
         self.__path.write_text('\n'.join(lines))
 
-    def __make_line(self, file: File) -> str:
-        return self.__delimiter.join([str(file.file_id)])
+    # def __make_line(self, file: File) -> str:
+    #     return self.__delimiter.join([str(file.file_id)])
 
     def __make_file(self, line: str):
         file_id = line.split(self.__delimiter)
         return File(int(file_id))
+    # def __make_folder(self, file):
+
 
 
 class DatabaseStorage(AbstractStorage):

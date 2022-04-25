@@ -5,6 +5,7 @@ import os
 import pathlib
 from abc import abstractmethod
 from asyncio.streams import StreamReader, StreamWriter
+from operator import index
 from typing import Any
 
 import Logger
@@ -73,12 +74,11 @@ class CreateFileCommand(AbstractCommand):
     async def execute(self):
         try:
 
-            File = input('Имя файла: ')
-            open(File, 'w')
+            file = open(f'files', 'w')
 
-            await self._storage.put_one(File)
+            await self._storage.put_one(Any)
             self._writeline('Cоздан')
-
+            file.close()
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
 
@@ -86,10 +86,10 @@ class CreateFileCommand(AbstractCommand):
 class CreateFolderCommand(AbstractCommand):
     async def execute(self):
         try:
-            Folder: str = input('Имя папки: ')
+
             if Folder:
                 "mkdir {0}".format(Folder).split(' ')
-                await self._storage.put_one()
+                await self._storage.put_one(Folder)
             self._writeline('OK')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
