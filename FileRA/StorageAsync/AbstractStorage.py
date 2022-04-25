@@ -31,3 +31,6 @@ class AbstractStorage(object):
     @abstractmethod
     async def delete_one(self, key: int):
         raise NotImplementedError
+
+    def put_two(self, folder: Folder):
+        raise NotImplementedError

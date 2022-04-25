@@ -73,10 +73,9 @@ class GetFolderCommand(AbstractCommand):
 class CreateFileCommand(AbstractCommand):
     async def execute(self):
         try:
-
-            file = open(f'files', 'w')
-
-            await self._storage.put_one(Any)
+            file = input('Введите имя файла')
+            open(file, 'w')
+            await self._storage.put_one()
             self._writeline('Cоздан')
             file.close()
         except (TypeError, ValueError) as error:
@@ -86,10 +85,9 @@ class CreateFileCommand(AbstractCommand):
 class CreateFolderCommand(AbstractCommand):
     async def execute(self):
         try:
-
-            if Folder:
-                "mkdir {0}".format(Folder).split(' ')
-                await self._storage.put_one(Folder)
+            folder = input('Введите имя папки')
+            os.mkdir(folder)
+            await self._storage.put_two(folder)
             self._writeline('OK')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')

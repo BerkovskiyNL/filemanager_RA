@@ -105,7 +105,6 @@ class FileStorage(AbstractStorage):
 
     def put_one(self, file: File):
         # открываем файл на запись
-        open(f'files', 'w')
         self.__path.open('w')
 
     def delete_one(self, file_id: int):
