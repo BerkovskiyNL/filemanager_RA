@@ -39,13 +39,13 @@ class InfoFolderCommand(AbstractCommand):
     async def execute(self):
         try:
             self._writeline('Input name folder')
-            folder = str(await self._readline())
-            if folder := await self._storage.get_all(folder):
-                os.listdir(folder)
-                self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
+            folder_id = str(await self._readline())
+            if folder := await self._storage.get_folder(folder_id):
+                os.listdir(folder_id)
                 self._writeline('OK')
+                self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
             else:
-                self._writeline(f'ERROR: folder "{folder}" not found')
+                self._writeline(f'ERROR: file "{folder}" not found')
         except ValueError as error:
             self._writeline(f'ERROR: {error}')
 
@@ -54,7 +54,6 @@ class InfoFileCommand(AbstractCommand):
         try:
             self._writeline('Input name file')
             file_id = str(await self._readline())
-
             if file := await self._storage.get_file(file_id):
                 self._writeline('OK')
                 self._writeline(str(file))
@@ -64,18 +63,20 @@ class InfoFileCommand(AbstractCommand):
             self._writeline(f'ERROR: {error}')
 
 
-# class GetFolderCommand(AbstractCommand):
-#     async def execute(self):
-#         try:
-#             folder_id = int(await self._readline())
-#
-#             if folder := await self._storage.get_folder(folder_id):
-#                 self._writeline('OK')
-#                 self._writeline(str(folder))
-#             else:
-#                 self._writeline(f'ERROR: note "{folder_id}" not found')
-#         except ValueError as error:
-#             self._writeline(f'ERROR: {error}')
+class GetListFolderCommand(AbstractCommand):
+    async def execute(self):
+        try:
+            self._writeline('Input name folder for get list')
+            folder = str(await self._readline())
+
+            if folder := await self._storage.get_all():
+                os.listdir(folder)
+                self._writeline('OK')
+                self._writeline(str(folder))
+            else:
+                self._writeline(f'ERROR: note "{folder}" not found')
+        except ValueError as error:
+            self._writeline(f'ERROR: {error}')
 
 
 class CreateFileCommand(AbstractCommand):
@@ -105,7 +106,7 @@ class CreateFolderCommand(AbstractCommand):
 
 class DeleteFileCommand(AbstractCommand):
     async def execute(self):
-        self._writeline('Input filename for delete')
+        self._writeline('Input file name for delete')
         filename = str(await self._readline())
         await self._storage.delete_one(filename)
         self._writeline('OK')
@@ -113,7 +114,7 @@ class DeleteFileCommand(AbstractCommand):
 
 class DeleteFolderCommand(AbstractCommand):
     async def execute(self):
-        self._writeline('Input foldername for delete')
+        self._writeline('Input folder name for delete')
         foldername = str(await self._readline())
         await self._storage.delete_folder(foldername)
         self._writeline('OK')
@@ -137,7 +138,8 @@ class CommandFactory(object):
         'DELETE_FOLDER': DeleteFolderCommand,
         'DELETE_FILE': DeleteFileCommand,
         'INFO_FOLDER': InfoFolderCommand,
-        'INFO_FILE': InfoFileCommand
+        'INFO_FILE': InfoFileCommand,
+        'LISTDIR': GetListFolderCommand
     }
 
     def __init__(self, storage: AbstractStorage, reader: StreamReader, writer: StreamWriter):

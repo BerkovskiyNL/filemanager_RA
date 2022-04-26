@@ -15,11 +15,11 @@ class FileManager:
         self.__name = name
         self.__storage = storage
 
-    def get_all(self) -> Iterable[Folder, File]:
+    def get_all(self) -> Iterable[Folder]:
         return self.__storage.get_all()
 
-    # def get_file(self, file_id) -> File | None:
-    #     return self.__storage.get_file(file_id)
+    def get_file(self, file_id) -> File | None:
+        return self.__storage.get_file(file_id)
 
     def create_folder(self) -> Folder:
         return self.__storage.create_folder()

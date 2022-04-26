@@ -19,8 +19,11 @@ class MemoryStorage(AbstractStorage):
         for value in self.__storageFolder.values():
             yield value
 
-    async def get_one(self, key: int) -> File | None:
-        return self.__storageFile.get(key)
+    async def get_folder(self, folder: str) -> Folder | None:
+        return self.__storageFolder.get(folder)
+
+    async def get_file(self, file: str) -> File | None:
+        return self.__storageFile.get(file)
 
     async def put_one(self, file: File):
         self.__storageFile[file.name] = file
