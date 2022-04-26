@@ -13,11 +13,11 @@ class AbstractStorage(object):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_file(self, key: int) -> File:
+    async def get_file(self, file: str) -> File:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_folder(self, key: int) -> Folder:
+    async def get_folder(self, folder: str) -> Folder:
         raise NotImplementedError
 
     @abstractmethod
@@ -29,8 +29,12 @@ class AbstractStorage(object):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_one(self, key: int):
+    async def delete_one(self, filename: str):
         raise NotImplementedError
 
-    def put_two(self, folder: Folder):
+    @abstractmethod
+    async def delete_folder(self, foldername: str):
+        raise NotImplementedError
+
+    async def put_folder(self, folder: Folder):
         raise NotImplementedError
