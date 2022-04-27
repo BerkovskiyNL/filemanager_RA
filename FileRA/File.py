@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class File:
     name: str
     size: int
-
+    content: str
 
 @dataclass
 class Folder:

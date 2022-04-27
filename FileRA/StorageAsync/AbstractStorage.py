@@ -36,5 +36,12 @@ class AbstractStorage(object):
     async def delete_folder(self, foldername: str):
         raise NotImplementedError
 
+    @abstractmethod
+    def list_folder(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_files(self):
+        raise NotImplementedError
     # async def put_folder(self, folder: Folder):
     #     raise NotImplementedError

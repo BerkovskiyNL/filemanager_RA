@@ -18,8 +18,8 @@ class FileManager:
     def get_all(self) -> Iterable[Folder]:
         return self.__storage.get_all()
 
-    def get_file(self, file_id) -> File | None:
-        return self.__storage.get_file(file_id)
+    # def get_file(self, file_id) -> File | None:
+    #     return self.__storage.get_file(file_id)
 
     def create_folder(self) -> Folder:
         return self.__storage.create_folder()
@@ -32,3 +32,6 @@ class FileManager:
 
     def delete_folder(self, folder_id: int):
         self.__storage.delete_folder(folder_id)
+
+    def list_dir (self, folder: str, file: str):
+        self.__storage.list_dir(folder, file)
