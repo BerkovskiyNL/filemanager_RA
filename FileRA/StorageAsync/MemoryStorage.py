@@ -16,8 +16,6 @@ class MemoryStorage(AbstractStorage):
         self.__storageFile: Dict[str, File] = {}
         self.__storageFolder: Dict[str, Folder] = {}
         self.__storage: Dict[int] = {}
-        # self.__folder_name = folder
-        # self.__file_name = file
 
     async def get_all(self) -> AsyncIterable[Folder]:
         for value in self.__storageFolder.values():
@@ -30,7 +28,6 @@ class MemoryStorage(AbstractStorage):
     async def get_file(self, file: str) -> File | None:
         f = self.__storageFile.get(Path(file))
         f.content = Path(file).open('r').read()
-        #return self.__storageFile.get(Path(file))
         return f
 
     async def put_one(self, file: File):

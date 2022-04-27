@@ -4,8 +4,7 @@ import os
 from pathlib import Path
 from abc import abstractmethod
 from asyncio.streams import StreamReader, StreamWriter
-from operator import index
-from typing import Any, Iterable
+
 
 import Logger
 
@@ -40,17 +39,11 @@ class InfoFolderCommand(AbstractCommand):
         try:
             self._writeline('Input name folder')
             folder_id = str(await self._readline())
-
-            #if folder := await self._storage.get_folder(folder_id):
-            #    os.listdir(folder_id)
             self._writeline('OK')
-            #    self._writeline(';;'.join([str(folder) async for folder in self._storage.get_all()]))
-            self._writeline(';;'.join([str(folder.name) async for folder in self._storage.list_folder(Path(folder_id))]))
-            #self._writeline(';;'.join([str(folder) async for folder in self._storage.list_files(Path(folder_id))]))
-            #else:
-            #    self._writeline(f'ERROR: file "{folder}" not found')
+            self._writeline(';\n'.join([str(folder) async for folder in self._storage.list_folder(Path(folder_id))]))
         except ValueError as error:
-                    self._writeline(f'ERROR: {error}')
+            self._writeline(f'ERROR: {error}')
+
 
 class InfoFileCommand(AbstractCommand):
     async def execute(self):
@@ -60,8 +53,6 @@ class InfoFileCommand(AbstractCommand):
             file = await self._storage.get_file(file_id)
             self._writeline('OK')
             self._writeline(str(file))
-            #else:
-            #    self._writeline(f'ERROR: file "{file_id}" not found')
         except ValueError as error:
             self._writeline(f'ERROR: {error}')
 
@@ -71,11 +62,9 @@ class GetListFolderCommand(AbstractCommand):
         try:
             self._writeline('Input name folder for get list')
             folder_id = str(await self._readline())
-
             self._writeline('OK')
             self._writeline(';\n'.join([str(folder.name) async for folder in self._storage.list_folder(Path(folder_id))]))
             self._writeline(';\n'.join([str(file.name) async for file in self._storage.list_files(Path(folder_id))]))
-
         except ValueError as error:
             self._writeline(f'ERROR: {error}')
 
@@ -85,11 +74,12 @@ class CreateFileCommand(AbstractCommand):
         try:
             self._writeline('Input file name')
             filename = str(await self._readline())
-            file_id = open(filename, 'w+')
+            file_id = open(filename, 'w')
             self._writeline('Input data')
             file_id.write(await self._readline())
-            file_id.close()
+
             await self._storage.put_one(File(filename, 0, ''))
+            file_id.close()
             self._writeline('Create')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')

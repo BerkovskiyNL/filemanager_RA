@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from pathlib import Path
 from typing import Iterable
 
 from FileRA.File import File, Folder
@@ -17,9 +15,6 @@ class FileManager:
 
     def get_all(self) -> Iterable[Folder]:
         return self.__storage.get_all()
-
-    # def get_file(self, file_id) -> File | None:
-    #     return self.__storage.get_file(file_id)
 
     def create_folder(self) -> Folder:
         return self.__storage.create_folder()

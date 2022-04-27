@@ -5,7 +5,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable, Tuple
 
-from FileRA.File import File, Folder
+from FileRA.File import File
 from FileRA.File import Folder
 
 
@@ -89,14 +89,9 @@ class FileStorage(AbstractStorage):
         if not self.__path.exists():
             self.__path.touch()
 
-    # def get_all(self, file=File) -> Iterable[Folder]:
-    #     # открываем папку на чтение
-    #     with self.__path.open('r') as f:
-    #         # читаем все файлы и формируем список
-    #         yield from (self.__make_folder(file.removesuffix('\n')) for list in f)
 
     def get_one(self, file_id) -> Folder | None:
-        # перебираем все заметки в поисках нужной, если находим - возвращаем
+
         for file in self.get_all():
             if file.file_id == file_id:
                 return file
@@ -108,17 +103,13 @@ class FileStorage(AbstractStorage):
         self.__path.open('w')
 
     def delete_one(self, file_id: int):
-        # читаем заметки, фильтруем, перезаписываем без удалённой
+
         lines = [self.__make_line(file) for file in self.get_all() if file.file_id != file_id]
         self.__path.write_text('\n'.join(lines))
-
-    # def __make_line(self, file: File) -> str:
-    #     return self.__delimiter.join([str(file.file_id)])
 
     def __make_file(self, line: str):
         file_id = line.split(self.__delimiter)
         return File(int(file_id))
-    # def __make_folder(self, file):
 
 
 
@@ -130,7 +121,7 @@ class DatabaseStorage(AbstractStorage):
         self.__connection = sqlite3.Connection(path)
         self.__cursor = self.__connection.cursor()
 
-        # создаём таблицу "notes", если таковой ещё нет
+
         self.__cursor.execute(
             'CREATE TABLE IF NOT EXISTS notes (id int PRIMARY KEY, author text, message text)'
         )
