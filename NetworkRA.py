@@ -77,9 +77,9 @@ class CreateFileCommand(AbstractCommand):
             file_id = open(filename, 'w')
             self._writeline('Input data')
             file_id.write(await self._readline())
-
-            await self._storage.put_one(File(filename, 0, ''))
             file_id.close()
+            await self._storage.put_one(File(filename, 0, ''))
+
             self._writeline('Create')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
@@ -91,7 +91,7 @@ class CreateFolderCommand(AbstractCommand):
             self._writeline('Input folder name')
             folder = str(await self._readline())
             os.mkdir(folder)
-            await self._storage.create_folder(Folder(folder, 0))
+            await self._storage.create_folder(Folder(folder, 0, ''))
             self._writeline('OK')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
