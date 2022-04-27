@@ -74,12 +74,12 @@ class CreateFileCommand(AbstractCommand):
         try:
             self._writeline('Input file name')
             filename = str(await self._readline())
-            file_id = open(filename, 'w')
+            file_id = open('files/filename', 'w')
             self._writeline('Input data')
             file_id.write(await self._readline())
-            file_id.close()
-            await self._storage.put_one(File(filename, 0, ''))
 
+            await self._storage.put_one(File(filename, 0, ''))
+            file_id.close()
             self._writeline('Create')
         except (TypeError, ValueError) as error:
             self._writeline(f'ERROR: {error}')
